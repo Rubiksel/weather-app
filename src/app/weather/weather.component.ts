@@ -26,7 +26,6 @@ export class WeatherComponent implements OnInit {
   weatherData: any;
   units = 'metrics';
   lang = 'en';
-  selectedLang = 'en';
 
   constructor(
     private fb: FormBuilder,
@@ -43,11 +42,8 @@ export class WeatherComponent implements OnInit {
     });
   }
 
-  onConfirmLanguage() {
-    console.log(this.selectedLang);
-    this.lang = this.selectedLang;
-    console.log(this.selectedLang);
-    console.log(this.lang);
+  onConfirmLanguage(lang: string) {
+    this.lang = lang;
     if (this.weatherForm.valid) {
       this.onSubmit();
     }

@@ -49,7 +49,7 @@
         <h5 class="card-title">Select Language</h5>
         <div class="row g-2 align-items-center">
           <div class="col-sm-8">
-            <select class="form-select" [(ngModel)]="selectedLang">
+            <select #langSelect class="form-select">
               <option value="en">English</option>
               <option value="es">Spanish</option>
               <option value="fr">French</option>
@@ -58,7 +58,10 @@
             </select>
           </div>
           <div class="col-sm-4">
-            <button class="btn btn-success w-100" (click)="onConfirmLanguage()">
+            <button
+              class="btn btn-success w-100"
+              (click)="onConfirmLanguage(langSelect.value)"
+            >
               Confirm Language
             </button>
           </div>

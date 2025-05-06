@@ -20,9 +20,9 @@ export class WeatherService {
       .set('appid', environment.openWeatherApiKey)
       .set('units', units)
       .set('lang', lang);
-
+    console.log('here', lang);
     if (query.lang) {
-      console.log('LANG', lang);
+      params = params.set('lang', lang);
     }
     if (query.city) {
       params = params.set(
