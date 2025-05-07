@@ -24,8 +24,11 @@ import { MetricToggleComponent } from '../metric-toggle/metric-toggle.component'
 export class WeatherComponent implements OnInit {
   weatherForm!: FormGroup;
   weatherData: any;
-  units = 'metrics';
+  units: 'imperial' | 'metric' = 'imperial';
   lang = 'en';
+  selectedDays = 1;
+  errorMessage: string | null = null;
+  showLangDropdown: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -40,26 +43,55 @@ export class WeatherComponent implements OnInit {
       lat: [''],
       lon: [''],
     });
+
+    const savedQuery = localStorage.getItem('lastWeatherQuery');
+    if (savedQuery) {
+      const parsedQuery = JSON.parse(savedQuery);
+      this.weatherForm.patchValue(parsedQuery);
+      this.onSubmit();
+    }
   }
 
-  onConfirmLanguage(lang: string) {
-    this.lang = lang;
+  setLanguage(code: string): void {
+    this.lang = code;
+    this.showLangDropdown = false;
     if (this.weatherForm.valid) {
       this.onSubmit();
     }
   }
 
   onUnitChange(unit: string): void {
-    this.units = unit as 'metric' | 'imperial';
+    this.units = unit as 'imperial' | 'metric';
     if (this.weatherForm.valid) {
+      this.onSubmit();
+    }
+  }
+
+  onDaysChange(days: number): void {
+    this.selectedDays = days;
+    if (this.weatherForm.valid && this.weatherData) {
       this.onSubmit();
     }
   }
 
   onSubmit(): void {
     const query = this.weatherForm.value;
+
+    localStorage.setItem('lastWeatherQuery', JSON.stringify(query));
+
     this.weatherService
       .getCurrentWeather(query, this.units, this.lang)
-      .subscribe((data) => (this.weatherData = data));
+      .subscribe({
+        next: (data) => {
+          this.weatherData = data;
+          this.errorMessage = null;
+        },
+        error: (error) => {
+          this.weatherData = null;
+          this.errorMessage =
+            'Could not retrieve weather data. Please check your input.';
+          console.error(error);
+        },
+      });
   }
 }
