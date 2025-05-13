@@ -1,22 +1,18 @@
+import { CommonModule } from '@angular/common';
 import { Component, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-metric-toggle',
-  template: `
-    <div class="btn-group">
-      <button class="btn btn-outline-primary" (click)="changeUnit('imperial')">
-        Imperial
-      </button>
-      <button class="btn btn-outline-primary" (click)="changeUnit('metric')">
-        Metric
-      </button>
-    </div>
-  `,
+  templateUrl: 'metric-toggle.component.html',
+  styleUrls: ['metric-toggle.component.scss'],
+  imports: [CommonModule],
 })
 export class MetricToggleComponent {
   @Output() unitChange = new EventEmitter<string>();
+  currentUnit: string = 'imperial'; // Default unit
 
-  changeUnit(unit: string) {
+  setUnit(unit: string) {
+    this.currentUnit = unit;
     this.unitChange.emit(unit);
   }
 }

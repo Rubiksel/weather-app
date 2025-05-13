@@ -1,0 +1,29 @@
+<div class="d-flex justify-content-center my-3">
+  <div
+    class="btn-group w-100 justify-content-center"
+    role="group"
+    style="max-width: 300px"
+  >
+    <button
+      type="button"
+      class="btn"
+      [ngClass]="{
+        'btn-primary': currentUnit === 'imperial',
+        'btn-outline-primary': currentUnit !== 'imperial'
+      }"
+      (click)="setUnit('imperial')"
+    >
+      🔧 Imperial</button
+    ><button
+      type="button"
+      class="btn"
+      [ngClass]="{
+        'btn-primary': currentUnit === 'metric',
+        'btn-outline-primary': currentUnit !== 'metric'
+      }"
+      (click)="setUnit('metric')"
+    >
+      🌡️ Metric
+    </button>
+  </div>
+</div>
