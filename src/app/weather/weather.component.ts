@@ -29,6 +29,9 @@ export class WeatherComponent implements OnInit {
   selectedDays = 1;
   errorMessage: string | null = null;
   showLangDropdown: boolean = false;
+  isLoading: boolean = false;
+  resolvedLocation: { name: string; state?: string; country: string } | null =
+    null;
 
   constructor(
     private fb: FormBuilder,
@@ -50,6 +53,10 @@ export class WeatherComponent implements OnInit {
       this.weatherForm.patchValue(parsedQuery);
       this.onSubmit();
     }
+  }
+
+  get temperatureUnit(): string {
+    return this.units === 'imperial' ? 'F' : 'C';
   }
 
   setLanguage(code: string): void {
@@ -76,21 +83,30 @@ export class WeatherComponent implements OnInit {
 
   onSubmit(): void {
     const query = this.weatherForm.value;
+    if (query.city && !query.country) {
+      this.errorMessage = 'Please specify a country when searching by city.';
+      return;
+    }
 
     localStorage.setItem('lastWeatherQuery', JSON.stringify(query));
+
+    this.isLoading = true;
 
     this.weatherService
       .getCurrentWeather(query, this.units, this.lang)
       .subscribe({
         next: (data) => {
           this.weatherData = data;
+          this.resolvedLocation = data.resolvedLocation || null;
           this.errorMessage = null;
+          this.isLoading = false;
         },
         error: (error) => {
           this.weatherData = null;
           this.errorMessage =
             'Could not retrieve weather data. Please check your input.';
           console.error(error);
+          this.isLoading = false;
         },
       });
   }

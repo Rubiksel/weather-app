@@ -20,9 +20,11 @@ export class WeatherService {
     const appid = environment.openWeatherApiKey;
 
     if (query.city) {
-      let location = `${query.city}`;
-      if (query.state) location += `${query.state}`;
-      if (query.country) location += `${query.country}`;
+      const parts = [query.city, query.state, query.country]
+        .map((v) => v?.trim())
+        .filter(Boolean);
+
+      const location = parts.join(',');
 
       const geoParams = new HttpParams()
         .set('q', location)
@@ -35,7 +37,7 @@ export class WeatherService {
             throw new Error('Location not found');
           }
 
-          const { lat, lon } = geoData[0];
+          const { lat, lon, name, state, country } = geoData[0];
 
           const weatherParams = new HttpParams()
             .set('appid', appid)
@@ -45,9 +47,18 @@ export class WeatherService {
             .set('lon', lon)
             .set('exclude', 'minutely,hourly,current,alerts');
 
-          return this.http.get(`${this.weatherApiUrl}/onecall`, {
-            params: weatherParams,
-          });
+          return this.http
+            .get(`${this.weatherApiUrl}/onecall`, {
+              params: weatherParams,
+            })
+            .pipe(
+              switchMap((weatherData) =>
+                of({
+                  ...weatherData,
+                  resolvedLocation: { name, state, country },
+                })
+              )
+            );
         })
       );
     } else if (query.lat && query.lon) {
