@@ -8,8 +8,8 @@ import { Component, Output, EventEmitter } from '@angular/core';
   imports: [CommonModule],
 })
 export class MetricToggleComponent {
-  @Output() unitChange = new EventEmitter<string>();
-  currentUnit: string = 'imperial'; // Default unit
+  @Output() unitChange = new EventEmitter<string>(); // sending data to the mother component
+  currentUnit: string = 'imperial';
 
   setUnit(unit: string) {
     this.currentUnit = unit;

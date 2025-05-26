@@ -13,6 +13,7 @@ export class WeatherService {
   constructor(private http: HttpClient) {}
 
   getCurrentWeather(
+    // fetch weather data
     query: any,
     units = 'imperial',
     lang = 'en'
@@ -20,7 +21,7 @@ export class WeatherService {
     const appid = environment.openWeatherApiKey;
 
     if (query.city) {
-      const parts = [query.city, query.state, query.country]
+      const parts = [query.city, query.state, query.country] // looks for precision on the city (in what state and country is it)
         .map((v) => v?.trim())
         .filter(Boolean);
 
@@ -29,7 +30,7 @@ export class WeatherService {
       const geoParams = new HttpParams()
         .set('q', location)
         .set('limit', 1)
-        .set('appid', appid);
+        .set('appid', appid); // getting the lat and lon coordinates from the city (new api can only use coordinates)
 
       return this.http.get<any[]>(this.geoApiUrl, { params: geoParams }).pipe(
         switchMap((geoData) => {
@@ -39,7 +40,7 @@ export class WeatherService {
 
           const { lat, lon, name, state, country } = geoData[0];
 
-          const weatherParams = new HttpParams()
+          const weatherParams = new HttpParams() // query parameters
             .set('appid', appid)
             .set('units', units)
             .set('lang', lang)
@@ -62,6 +63,7 @@ export class WeatherService {
         })
       );
     } else if (query.lat && query.lon) {
+      // if lat and lon provided directly, no need to got through the geo api
       const weatherParams = new HttpParams()
         .set('appid', appid)
         .set('units', units)
